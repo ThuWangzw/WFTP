@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 	//设置本机的ip和port
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_port = port_num;
+	addr.sin_port = htons(port_num);
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);	//监听"0.0.0.0"
 
 	//将本机的ip和port与socket绑定
@@ -82,8 +82,12 @@ void *command_dispatch(void *pconnfd){
 		if((command_parser(recv_com,iresult,&com))!=0){
 			//command not found
 			send_code(connfd, 500,0,NULL);
+			continue;
 		}
-		if((iresult = com.func(com.arg_len,com.arg))==1){
+		//
+		
+		//
+		if((iresult = com.func(connfd, com.arg_len,com.arg))==1){
 			//response error
 			printf("Error func(): response error\n");
 			continue;

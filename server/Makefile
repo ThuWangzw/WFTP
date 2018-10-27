@@ -5,7 +5,7 @@ CFLAGS=-Wall -std=gnu99
 # 目标文件
 TARGET=server
 # 源文件
-SRCS= command_resp.c command_parse.c command.c server.c
+SRCS= command_resp.c command.c command_parse.c server.c
  
 OBJS = $(SRCS:.c=.o)
  

@@ -1,8 +1,8 @@
 #include "command_resp.h"
 #include <sys/socket.h>
 int codenum[]={220,500};
-char *codemsg[]={"ftp.ssast.org FTP server ready.",
-				"Syntax error, command unrecognized."};
+char *codemsg[]={"220 ftp.ssast.org FTP server ready.\r\n",
+				"500 Syntax error, command unrecognized.\r\n"};
 int send_code(int connfd, int code, int argc, int *argv){
 	int respsize = (sizeof codenum)/(sizeof (int));
 	int i;
@@ -18,5 +18,6 @@ int send_code(int connfd, int code, int argc, int *argv){
 		printf("Error: No codenum %d\n", code);
 		return 1;
 	}
-	send(connfd, codemsg[codeidx],sizeof(codemsg[codeidx]),0);
+	//printf("%d,%d\n",codeidx,sizeof(codemsg[codeidx]));
+	send(connfd, codemsg[codeidx],strlen(codemsg[codeidx]),0);
 }
