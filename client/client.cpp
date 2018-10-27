@@ -7,8 +7,9 @@
 #pragma comment(lib,"ws2_32.lib")
 #define host_address "127.0.0.1"
 #define port_num 6789
-char *codemsg[] = { "ftp.ssast.org FTP server ready.\r\n",
-"Syntax error, command unrecognized.\r\n" };
+char *command_type[] = {
+	"USER", "PASS", "RETR", "STOR", "QUIT", "SYST", "TYPE", "PORT", "PASV", "MKD", "CWD", "PWD","LIST", "RMD", "RNFR", "RNTO"
+};
 int main(int argc, char **argv) {
 	int sockfd;
 	struct sockaddr_in addr;
@@ -43,6 +44,7 @@ int main(int argc, char **argv) {
 	{
 		//获取键盘输入
 		printf(">>>");
+		memset(sentence, 0, 4096);
 		fgets(sentence, 4096, stdin);
 		len = strlen(sentence);
 		sentence[len - 1] = 0;
@@ -51,7 +53,7 @@ int main(int argc, char **argv) {
 
 		//把键盘输入写入socket
 		p = 0;
-		int n = send(sockfd, sentence, len, 0);		//write函数不保证所有的数据写完，可能中途退出
+		int n = send(sockfd, sentence, len - 1, 0);
 		if (n < 0) {
 			printf("Error send(): %s(%d)\n", strerror(errno), errno);
 			return 1;

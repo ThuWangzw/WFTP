@@ -12,16 +12,12 @@
 #include "command_parse.h"
 #define ip_address "127.0.0.1"
 #define port_num 6789
-#define STATUS_LOGOUT 1
-#define STATUS_WAITINGPASS 2
+
 
 void *command_dispatch(void *pconnfd);
 int main(int argc, char **argv) {
 	int listenfd, connfd;		//监听socket和连接socket不一样，后者用于数据传输
 	struct sockaddr_in addr;
-	char sentence[8192];
-	int p;
-	int len;
 	pthread_t tid;
 	//创建socket
 	if ((listenfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
@@ -64,8 +60,9 @@ int main(int argc, char **argv) {
 	return 0;
 }
 void *command_dispatch(void *pconnfd){
+	struct ConInfo coninfo;
 	int connfd = *(int *)pconnfd;
-	int status=STATUS_LOGOUT;
+	coninfo.status=STATUS_LOGOUT;
 	char recv_com[1000]="";
 	int iresult = 0;
 	struct Command com;
@@ -79,15 +76,17 @@ void *command_dispatch(void *pconnfd){
 			//connection has closed
 			break;
 		}
-		if((command_parser(recv_com,iresult,&com))!=0){
-			//command not found
-			send_code(connfd, 500,0,NULL);
+		if((iresult = command_parser(recv_com,iresult,&com,coninfo.status))!=0){
+			if(iresult==-1){
+				break;
+			}
+			send_code(connfd, iresult,0,NULL);
 			continue;
 		}
 		//
 		
 		//
-		if((iresult = com.func(connfd, com.arg_len,com.arg))==1){
+		if((iresult = com.func(connfd, com.arg_len,com.arg,&coninfo))==1){
 			//response error
 			printf("Error func(): response error\n");
 			continue;
