@@ -66,9 +66,9 @@ int main(int argc, char **argv) {
 void *command_dispatch(void *pconnfd){
 	int connfd = *(int *)pconnfd;
 	int status=STATUS_LOGOUT;
-	char *recv_com[1000]="";
+	char recv_com[1000]="";
 	int iresult = 0;
-	Command com;
+	struct Command com;
 	send_code(connfd, 220,0,NULL);
 	while(1){
 		if((iresult = recv(connfd, recv_com, 1000, 0))==-1){
@@ -79,7 +79,7 @@ void *command_dispatch(void *pconnfd){
 			//connection has closed
 			break;
 		}
-		if((command_parser(recv,iresult,&com))!=0){
+		if((command_parser(recv_com,iresult,&com))!=0){
 			//command not found
 			send_code(connfd, 500,0,NULL);
 		}
