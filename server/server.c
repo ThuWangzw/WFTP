@@ -11,7 +11,7 @@
 #include "command_resp.h"
 #include "command_parse.h"
 #define ip_address "127.0.0.1"
-#define port_num 6789
+#define port_num 21
 
 
 void *command_dispatch(void *pconnfd);
@@ -63,6 +63,7 @@ void *command_dispatch(void *pconnfd){
 	struct ConInfo coninfo;
 	int connfd = *(int *)pconnfd;
 	coninfo.status=STATUS_LOGOUT;
+	coninfo.sock = connfd;
 	char recv_com[1000]="";
 	int iresult = 0;
 	struct Command com;
@@ -83,9 +84,6 @@ void *command_dispatch(void *pconnfd){
 			send_code(connfd, iresult,0,NULL);
 			continue;
 		}
-		//
-		
-		//
 		if((iresult = com.func(connfd, com.arg_len,com.arg,&coninfo))==1){
 			//response error
 			printf("Error func(): response error\n");

@@ -9,7 +9,6 @@ int command_find(struct Command* com,int status){
 	int com_idx = -1;
 	//find
 	for(i = 0;i < command_num; i++){
-		printf("%d\n",strlen(command_type[i]));
 		if((com->name_len==(strlen(command_type[i])))&&(!strncasecmp(com->name,command_type[i],com->name_len))){
 			//found!
 			com_idx = i;
@@ -19,6 +18,7 @@ int command_find(struct Command* com,int status){
 	}
 	if(com_idx==-1){
 		//not found
+		printf("len:%d,name:%s\n",com->name_len,com->name);
 		return 500;
 	}
 	//dispatch
@@ -28,6 +28,9 @@ int command_find(struct Command* com,int status){
 				case CUSER:
 					com->func = runcommand_user;
 					break;
+				case CSYST:
+					com->func = runcommand_syst;
+					break;
 				default:
 					return 332;
 					break;
@@ -35,13 +38,20 @@ int command_find(struct Command* com,int status){
 			break;
 		case STATUS_WAITINGPASS:
 			switch(com_idx){
+				case CUSER:
+					com->func = runcommand_user;
+					break;
 				case CPASS:
 					com->func = runcommand_pass;
+					break;
+				case CSYST:
+					com->func = runcommand_syst;
 					break;
 				default:
 				return 332;
 					break;		
 			}
+			break;
 		case STATUS_LOGIN:
 			switch(com_idx){
 				case CRETR:
@@ -92,7 +102,7 @@ int command_find(struct Command* com,int status){
 			}
 		default:
 			break;
-	}
+	}/*
 	switch(com_idx){
 		case CPASS:
 			com->func = runcommand_pass;
@@ -142,7 +152,7 @@ int command_find(struct Command* com,int status){
 		default:
 			printf("strange error at command_find!\n");
 			break;
-	}
+	}*/
 	return 0;
 }
 int command_parser(char *str, int strlen, struct Command* com,int status){
@@ -159,12 +169,12 @@ int command_parser(char *str, int strlen, struct Command* com,int status){
 			str[i]=0;
 			com->name_len = i;
 			com->arg = str+i+1;
-			com->arg_len = strlen-i-1;
+			com->arg_len = strlen-i-2;
 			break;
 		}
 	}
 	if(com->name_len == 0){
-		com->name_len = strlen;
+		com->name_len = strlen-1;
 	}
 	//test
 	//printf("com name:%s\ncomlen:%d\narg:%s\narglen:%d\n",com->name,com->name_len,com->arg,com->arg_len);

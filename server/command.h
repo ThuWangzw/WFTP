@@ -17,10 +17,22 @@
 #define CRMD 13
 #define CRNFR 14
 #define CRNTO 15
+#define NAME_MAX_LEN
+#define STATUS_LOGIN 0
+#define STATUS_LOGOUT 1
+#define STATUS_WAITINGPASS 2
+#define STATUS_PORT 3
+#define STATUS_PASV 4
 struct ConInfo{
-	char *username;
+	char username[50];
 	int userlen;
 	int status;
+	int sock;
+	unsigned int cip;
+	int cport;
+	unsigned int mip;
+	int mport;
+	int tid;
 };
 struct Command{
 	char *name;

@@ -6,7 +6,7 @@
 #include "command.h"
 #pragma comment(lib,"ws2_32.lib")
 #define host_address "127.0.0.1"
-#define port_num 6789
+#define port_num 21
 char *command_type[] = {
 	"USER", "PASS", "RETR", "STOR", "QUIT", "SYST", "TYPE", "PORT", "PASV", "MKD", "CWD", "PWD","LIST", "RMD", "RNFR", "RNTO"
 };
@@ -47,13 +47,12 @@ int main(int argc, char **argv) {
 		memset(sentence, 0, 4096);
 		fgets(sentence, 4096, stdin);
 		len = strlen(sentence);
-		sentence[len - 1] = 0;
 		
-		ct = command_dispatch(sentence, len - 1);
+		ct = command_dispatch(sentence, len);
 
 		//∞—º¸≈Ã ‰»Î–¥»Îsocket
 		p = 0;
-		int n = send(sockfd, sentence, len - 1, 0);
+		int n = send(sockfd, sentence, len, 0);
 		if (n < 0) {
 			printf("Error send(): %s(%d)\n", strerror(errno), errno);
 			return 1;
